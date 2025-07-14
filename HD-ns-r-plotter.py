@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import integrate, optimize
-from functools import lru_cache
 import matplotlib.patches as mpatches
 from tqdm import tqdm
 from joblib import Parallel, delayed
@@ -22,7 +21,7 @@ plt.rcParams.update({
 
 # === Inflationary Model Functions ===
 
-@lru_cache(None)
+
 def coeff(j, k):
     return j + 6 * k**2
 
@@ -121,9 +120,8 @@ ACT1 = np.loadtxt('ACT1s.txt')
 ACT2 = np.loadtxt('ACT2s.txt')
 
 # === Extract observational bands ===
-N1, N2 = 68, 89
-NS1s, R1s = bcp1[:N1, 0], bcp1[:N1, 1]
-NS2s, R2s = bcp2[:N2, 0], bcp2[:N2, 1]
+NS1s, R1s = bcp1[:, 0], bcp1[:, 1]
+NS2s, R2s = bcp2[:, 0], bcp2[:, 1]
 NS_ACT1, R_ACT1 = ACT1[:, 0], ACT1[:, 1]
 NS_ACT2, R_ACT2 = ACT2[:, 0], ACT2[:, 1]
 
@@ -174,6 +172,8 @@ fig.colorbar(img, orientation="vertical", pad=0.07, label=r'$\log_{10}\;\tau_\et
 
 # Save plot
 plt.savefig('PLANCK-ACT-NS-R-taueta_contraints.png', dpi=500, bbox_inches='tight')
+
+    
 
     
     
