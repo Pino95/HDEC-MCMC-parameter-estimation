@@ -1,9 +1,12 @@
+
 import numpy as np
 import scipy.integrate as integrate
 from scipy import optimize
 from multiprocessing import Pool
 from functools import lru_cache
 import dynesty
+import matplotlib.pyplot as plt
+from dynesty import plotting as dyplot
 
 # === Model-Specific Functions ===
 
@@ -74,19 +77,16 @@ def eta(a, b, c, d):
 # === End of Inflation and COBE ===
 
 def h_end(a, b, c, d):
-    """Inflaton value where ε = 1"""
     f_eps = lambda x: eps(a, b, c, d)(x) - 1
     return optimize.brentq(f_eps, 1e-12, 100)
 
 def h_in(a, b, c, d):
-    """Inflaton value from COBE normalization"""
     V1 = V(a, b)
     epsi = eps(a, b, c, d)
     COBE = lambda x: V1(x) / epsi(x) - 5e-7
     return optimize.brentq(COBE, 1e-12, 1000.0)
 
 def NEF(a, b, c, d):
-    """Number of e-folds"""
     k1 = K(a, b, c, d)
     V1 = V(a, b)
     DV1 = DV(a, b)
@@ -115,15 +115,14 @@ def prior_transform(u):
 ndim = 4
 np.random.seed(17)
 
-if __name__ == "__main__":
-    with Pool() as pool:
-        sampler = dynesty.DynamicNestedSampler(
-            loglike, prior_transform, ndim, nlive=1500,
-            pool=pool, queue_size=8
-        )
-        sampler.run_nested(dlogz_init=0.5)
+with Pool() as pool:
+    sampler = dynesty.NestedSampler(loglike, prior_transform, ndim, nlive=1500,
+            pool=pool, queue_size=10,
+            print_progress=True)
+    sampler.run_nested()
+    print("\n✅ Sampling completed! Results are stored in 'SAMPLE.npy'.\n")
 
-    
 sresults = sampler.results
 SAMPLE=sresults.samples
-np.save('SAMPLE',SAMPLE)
+print(SAMPLE)
+np.save('SAMPLE.npy', SAMPLE)
