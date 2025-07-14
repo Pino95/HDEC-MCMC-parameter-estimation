@@ -1,7 +1,6 @@
 import numpy as np
 from scipy import optimize
 from joblib import Parallel, delayed
-from functools import lru_cache
 import logging
 import time
 from tqdm import tqdm
@@ -11,7 +10,6 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 # === Model Functions ===
 
-@lru_cache(None)
 def coeff(j, k):
     return j + 6 * k**2
 
